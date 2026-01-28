@@ -39,3 +39,6 @@
 	path = thirdparty/magic_enum/magic_enum-0.9.7
 	url = https://github.com/Neargye/magic_enum.git
 	ignore = all
+[submodule "thirdparty/omega"]
+	path = thirdparty/omega
+	url = git@github.com:driPyf/OMEGALib.git
