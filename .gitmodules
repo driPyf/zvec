@@ -41,4 +41,4 @@
 	ignore = all
 [submodule "thirdparty/omega"]
 	path = thirdparty/omega
-	url = git@github.com:driPyf/OMEGALib.git
+	url = https://github.com/driPyf/OMEGALib.git
