@@ -111,6 +111,9 @@ class HnswSearcher : public IndexSearcher {
   //! current streamer/searcher
   int update_context(HnswContext *ctx) const;
 
+ protected:
+  uint32_t ef_{HnswEntity::kDefaultEf};
+
  private:
   enum State { STATE_INIT = 0, STATE_INITED = 1, STATE_LOADED = 2 };
 
@@ -121,7 +124,6 @@ class HnswSearcher : public IndexSearcher {
   IndexMeta meta_{};
   ailego::Params params_{};
   Stats stats_;
-  uint32_t ef_{HnswEntity::kDefaultEf};
   uint32_t max_scan_num_{0U};
   uint32_t bruteforce_threshold_{HnswEntity::kDefaultBruteForceThreshold};
   float max_scan_ratio_{HnswEntity::kDefaultScanRatio};

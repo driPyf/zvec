@@ -38,16 +38,8 @@ class OmegaStreamer : public IndexStreamer {
   //! Cleanup Streamer
   virtual int cleanup(void) override;
 
-  //! Create a context (delegate to HNSW)
-  virtual Context::Pointer create_context(void) const override {
-    return hnsw_streamer_->create_context();
-  }
-
-  //! Create a new iterator (delegate to HNSW)
-  virtual IndexProvider::Pointer create_provider(void) const override {
-    return hnsw_streamer_->create_provider();
-  }
-
+  // TODO: These methods call protected methods and need to be fixed
+  /*
   //! Add a vector into index (delegate to HNSW)
   virtual int add_impl(uint64_t pkey, const void *query,
                        const IndexQueryMeta &qmeta,
@@ -74,7 +66,10 @@ class OmegaStreamer : public IndexStreamer {
                           Context::Pointer &context) const override {
     return hnsw_streamer_->search_impl(query, qmeta, count, context);
   }
+  */
 
+  // TODO: These methods call protected methods and need to be fixed
+  /*
   //! Similarity brute force search (delegate to HNSW)
   virtual int search_bf_impl(const void *query, const IndexQueryMeta &qmeta,
                              Context::Pointer &context) const override {
@@ -104,7 +99,10 @@ class OmegaStreamer : public IndexStreamer {
     return hnsw_streamer_->search_bf_by_p_keys_impl(query, p_keys, qmeta,
                                                      count, context);
   }
+  */
 
+  // TODO: These methods call protected methods and need to be fixed
+  /*
   //! Remove a vector from index (delegate to HNSW)
   virtual int remove_impl(uint64_t pkey, Context::Pointer &context) override {
     return hnsw_streamer_->remove_impl(pkey, context);
@@ -125,14 +123,15 @@ class OmegaStreamer : public IndexStreamer {
     return hnsw_streamer_->meta();
   }
 
-  //! Retrieve params of index
-  virtual const ailego::Params &params(void) const override {
+  //! Retrieve params of index - NOTE: Not overriding base class method
+  const ailego::Params &params(void) const {
     return params_;
   }
 
   virtual void print_debug_info() override {
     hnsw_streamer_->print_debug_info();
   }
+  */
 
  private:
   std::shared_ptr<HnswStreamer> hnsw_streamer_;

@@ -15,13 +15,13 @@
 
 #include <zvec/core/framework/index_framework.h>
 #include "../hnsw/hnsw_searcher.h"
-#include "omega/omega_api.h"
+#include <omega/omega_api.h>
 
 namespace zvec {
 namespace core {
 
-//! OMEGA Index Searcher - wraps HNSW with adaptive search
-class OmegaSearcher : public IndexSearcher {
+//! OMEGA Index Searcher - extends HNSW with adaptive search
+class OmegaSearcher : public HnswSearcher {
  public:
   using ContextPointer = IndexSearcher::Context::Pointer;
 
@@ -57,36 +57,8 @@ class OmegaSearcher : public IndexSearcher {
                           uint32_t count,
                           ContextPointer &context) const override;
 
-  //! Linear Search (delegate to HNSW)
-  virtual int search_bf_impl(const void *query, const IndexQueryMeta &qmeta,
-                             ContextPointer &context) const override {
-    return hnsw_searcher_->search_bf_impl(query, qmeta, context);
-  }
-
-  //! Linear Search (delegate to HNSW)
-  virtual int search_bf_impl(const void *query, const IndexQueryMeta &qmeta,
-                             uint32_t count,
-                             ContextPointer &context) const override {
-    return hnsw_searcher_->search_bf_impl(query, qmeta, count, context);
-  }
-
-  //! Linear search by primary keys (delegate to HNSW)
-  virtual int search_bf_by_p_keys_impl(
-      const void *query, const std::vector<std::vector<uint64_t>> &p_keys,
-      const IndexQueryMeta &qmeta, ContextPointer &context) const override {
-    return hnsw_searcher_->search_bf_by_p_keys_impl(query, p_keys, qmeta,
-                                                     context);
-  }
-
-  //! Linear search by primary keys (delegate to HNSW)
-  virtual int search_bf_by_p_keys_impl(
-      const void *query, const std::vector<std::vector<uint64_t>> &p_keys,
-      const IndexQueryMeta &qmeta, uint32_t count,
-      ContextPointer &context) const override {
-    return hnsw_searcher_->search_bf_by_p_keys_impl(query, p_keys, qmeta,
-                                                     count, context);
-  }
-
+  // TODO: These methods call protected methods of HnswSearcher and need to be fixed
+  /*
   //! Fetch vector by key (delegate to HNSW)
   virtual const void *get_vector(uint64_t key) const override {
     return hnsw_searcher_->get_vector(key);
@@ -120,6 +92,7 @@ class OmegaSearcher : public IndexSearcher {
   virtual void print_debug_info() override {
     hnsw_searcher_->print_debug_info();
   }
+  */
 
  private:
   //! Check if OMEGA mode should be used
@@ -129,12 +102,11 @@ class OmegaSearcher : public IndexSearcher {
            omega_model_is_loaded(omega_model_);
   }
 
+  //! Adaptive search with OMEGA predictions
+  int adaptive_search(const void *query, const IndexQueryMeta &qmeta,
+                      uint32_t count, ContextPointer &context) const;
+
  private:
-  enum State { STATE_INIT = 0, STATE_INITED = 1, STATE_LOADED = 2 };
-
-  // Underlying HNSW searcher
-  std::shared_ptr<HnswSearcher> hnsw_searcher_;
-
   // OMEGA components
   OmegaModelHandle omega_model_;
   bool omega_enabled_;
@@ -143,9 +115,6 @@ class OmegaSearcher : public IndexSearcher {
   uint32_t min_vector_threshold_;
   size_t current_vector_count_;
   std::string model_dir_;
-
-  ailego::Params params_{};
-  State state_{STATE_INIT};
 };
 
 }  // namespace core

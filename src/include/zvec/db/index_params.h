@@ -44,7 +44,7 @@ class IndexParams {
 
   bool is_vector_index_type() const {
     return type_ == IndexType::FLAT || type_ == IndexType::HNSW ||
-           type_ == IndexType::IVF;
+           type_ == IndexType::IVF || type_ == IndexType::OMEGA;
   }
 
   IndexType type() const {
@@ -312,6 +312,65 @@ class IVFIndexParams : public VectorIndexParams {
   int n_list_;
   int n_iters_;
   bool use_soar_;
+};
+
+/*
+ * Vector: Omega index params
+ */
+class OmegaIndexParams : public VectorIndexParams {
+ public:
+  OmegaIndexParams(
+      MetricType metric_type, int m = core_interface::kDefaultHnswNeighborCnt,
+      int ef_construction = core_interface::kDefaultHnswEfConstruction,
+      QuantizeType quantize_type = QuantizeType::UNDEFINED)
+      : VectorIndexParams(IndexType::OMEGA, metric_type, quantize_type),
+        m_(m),
+        ef_construction_(ef_construction) {}
+
+  using OPtr = std::shared_ptr<OmegaIndexParams>;
+
+ public:
+  Ptr clone() const override {
+    return std::make_shared<OmegaIndexParams>(metric_type_, m_, ef_construction_,
+                                             quantize_type_);
+  }
+
+  std::string to_string() const override {
+    auto base_str = vector_index_params_to_string("OmegaIndexParams",
+                                                  metric_type_, quantize_type_);
+    std::ostringstream oss;
+    oss << base_str << ",m:" << m_ << ",ef_construction:" << ef_construction_
+        << "}";
+    return oss.str();
+  }
+
+  bool operator==(const IndexParams &other) const override {
+    return type() == other.type() &&
+           metric_type() ==
+               static_cast<const OmegaIndexParams &>(other).metric_type() &&
+           m_ == static_cast<const OmegaIndexParams &>(other).m_ &&
+           ef_construction_ ==
+               static_cast<const OmegaIndexParams &>(other).ef_construction_ &&
+           quantize_type() ==
+               static_cast<const OmegaIndexParams &>(other).quantize_type();
+  }
+
+  void set_m(int m) {
+    m_ = m;
+  }
+  int m() const {
+    return m_;
+  }
+  void set_ef_construction(int ef_construction) {
+    ef_construction_ = ef_construction;
+  }
+  int ef_construction() const {
+    return ef_construction_;
+  }
+
+ private:
+  int m_;
+  int ef_construction_;
 };
 
 }  // namespace zvec

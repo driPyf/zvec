@@ -48,6 +48,7 @@ from .model.param import (
     InvertIndexParam,
     IVFIndexParam,
     IVFQueryParam,
+    OmegaIndexParam,
     OptimizeOption,
 )
 from .model.param.vector_query import VectorQuery
@@ -92,6 +93,7 @@ __all__ = [
     "HnswIndexParam",
     "FlatIndexParam",
     "IVFIndexParam",
+    "OmegaIndexParam",
     "CollectionOption",
     "IndexOption",
     "OptimizeOption",

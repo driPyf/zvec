@@ -13,7 +13,9 @@
 // limitations under the License.
 
 #include "omega_builder.h"
-#include <aitheta2/index_framework.h>
+#include <zvec/core/framework/index_error.h>
+#include <zvec/core/framework/index_factory.h>
+#include <zvec/core/framework/index_logger.h>
 
 namespace zvec {
 namespace core {
@@ -23,9 +25,15 @@ OmegaBuilder::OmegaBuilder() : hnsw_builder_(nullptr) {}
 int OmegaBuilder::init(const IndexMeta &meta, const ailego::Params &params) {
   if (state_ != BUILD_STATE_INIT) {
     LOG_ERROR("OmegaBuilder already initialized");
-    return PROXIMA_BE_ERROR_CODE(DuplicateInit);
+    return IndexError_Duplicate;
   }
 
+  // TODO: Fix design - cannot call protected init method of HnswBuilder
+  // For now, return NotImplemented error
+  LOG_ERROR("OmegaBuilder is not yet fully implemented - wrapper design needs fixing");
+  return IndexError_NotImplemented;
+
+  /*
   // Create underlying HNSW builder
   hnsw_builder_ = std::make_shared<HnswBuilder>();
   int ret = hnsw_builder_->init(meta, params);
@@ -37,6 +45,7 @@ int OmegaBuilder::init(const IndexMeta &meta, const ailego::Params &params) {
   state_ = BUILD_STATE_INITED;
   LOG_INFO("OmegaBuilder initialized");
   return 0;
+  */
 }
 
 int OmegaBuilder::cleanup(void) {
@@ -57,7 +66,7 @@ int OmegaBuilder::train(IndexThreads::Pointer threads,
                         IndexHolder::Pointer holder) {
   if (state_ != BUILD_STATE_INITED) {
     LOG_ERROR("OmegaBuilder not initialized");
-    return PROXIMA_BE_ERROR_CODE(InvalidState);
+    return IndexError_NoReady;
   }
 
   int ret = hnsw_builder_->train(threads, holder);
@@ -73,7 +82,7 @@ int OmegaBuilder::train(IndexThreads::Pointer threads,
 int OmegaBuilder::train(const IndexTrainer::Pointer &trainer) {
   if (state_ != BUILD_STATE_INITED) {
     LOG_ERROR("OmegaBuilder not initialized");
-    return PROXIMA_BE_ERROR_CODE(InvalidState);
+    return IndexError_NoReady;
   }
 
   int ret = hnsw_builder_->train(trainer);
@@ -90,7 +99,7 @@ int OmegaBuilder::build(IndexThreads::Pointer threads,
                         IndexHolder::Pointer holder) {
   if (state_ != BUILD_STATE_TRAINED) {
     LOG_ERROR("OmegaBuilder not trained");
-    return PROXIMA_BE_ERROR_CODE(InvalidState);
+    return IndexError_NoReady;
   }
 
   int ret = hnsw_builder_->build(threads, holder);
@@ -107,7 +116,7 @@ int OmegaBuilder::build(IndexThreads::Pointer threads,
 int OmegaBuilder::dump(const IndexDumper::Pointer &dumper) {
   if (state_ != BUILD_STATE_BUILT) {
     LOG_ERROR("OmegaBuilder not built");
-    return PROXIMA_BE_ERROR_CODE(InvalidState);
+    return IndexError_NoReady;
   }
 
   int ret = hnsw_builder_->dump(dumper);
@@ -123,4 +132,5 @@ int OmegaBuilder::dump(const IndexDumper::Pointer &dumper) {
 }  // namespace core
 }  // namespace zvec
 
-INDEX_FACTORY_REGISTER_BUILDER(zvec::core::OmegaBuilder);
+// TODO: Fix OmegaBuilder design - it tries to call protected methods of HnswBuilder
+// INDEX_FACTORY_REGISTER_BUILDER(zvec::core::OmegaBuilder);

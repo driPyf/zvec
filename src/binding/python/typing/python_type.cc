@@ -98,7 +98,8 @@ Examples:
       .value("HNSW", IndexType::HNSW)
       .value("IVF", IndexType::IVF)
       .value("FLAT", IndexType::FLAT)
-      .value("INVERT", IndexType::INVERT);
+      .value("INVERT", IndexType::INVERT)
+      .value("OMEGA", IndexType::OMEGA);
 }
 
 void ZVecPyTyping::bind_metric_types(pybind11::module_ &m) {

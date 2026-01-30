@@ -13,7 +13,9 @@
 // limitations under the License.
 
 #include "omega_streamer.h"
-#include <aitheta2/index_framework.h>
+#include <zvec/core/framework/index_error.h>
+#include <zvec/core/framework/index_factory.h>
+#include <zvec/core/framework/index_logger.h>
 
 namespace zvec {
 namespace core {
@@ -27,6 +29,12 @@ OmegaStreamer::~OmegaStreamer(void) {
 int OmegaStreamer::init(const IndexMeta &imeta, const ailego::Params &params) {
   params_ = params;
 
+  // TODO: Fix design - cannot call protected init method of HnswStreamer
+  // For now, return NotImplemented error
+  LOG_ERROR("OmegaStreamer is not yet fully implemented - wrapper design needs fixing");
+  return IndexError_NotImplemented;
+
+  /*
   // Create underlying HNSW streamer
   hnsw_streamer_ = std::make_shared<HnswStreamer>();
   int ret = hnsw_streamer_->init(imeta, params);
@@ -37,17 +45,16 @@ int OmegaStreamer::init(const IndexMeta &imeta, const ailego::Params &params) {
 
   LOG_INFO("OmegaStreamer initialized");
   return 0;
+  */
 }
 
 int OmegaStreamer::cleanup(void) {
-  if (hnsw_streamer_ != nullptr) {
-    hnsw_streamer_->cleanup();
-    hnsw_streamer_.reset();
-  }
+  // Since init returns NotImplemented, cleanup does nothing
   return 0;
 }
 
 }  // namespace core
 }  // namespace zvec
 
-INDEX_FACTORY_REGISTER_STREAMER(zvec::core::OmegaStreamer);
+// TODO: Fix OmegaStreamer design - it tries to call protected methods of HnswStreamer
+// INDEX_FACTORY_REGISTER_STREAMER(zvec::core::OmegaStreamer);
